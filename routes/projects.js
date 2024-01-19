@@ -6,5 +6,6 @@ const projectsController = require('../Controllers/projects-controller');
 router.route('/').get(projectsController.index).post(projectsController.createProject);
 router.route('/:id').get(projectsController.getProjectById).delete(projectsController.deleteProject).put(projectsController.updateProjectDetails);
 router.route('/:id/tasks').get(projectsController.getProjectTasks);
+router.route('/user/:id').get(projectsController.getProjectsByUserId); // Added route
 
 module.exports = router;
