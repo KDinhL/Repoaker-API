@@ -107,6 +107,7 @@ const updateProjectDetails = (req, res) => {
 
 const createProject = (req, res) => {
   const newProject = {
+    project_user: req.body.project_user,
     project_name: req.body.project_name,
     project_description: req.body.project_description,
     project_start_date: req.body.project_start_date,
@@ -184,10 +185,10 @@ const getProjectTasks = async (req, res) => {
   }
 };
 
-const getProjectsByUserId = async (req, res, next) => {
+const getProjectsByUserName = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const projects = await knex("projects").where({ auth_id: userId }).select("*");
+    const userName = req.params.Name;
+    const projects = await knex("projects").where({ project_user: userName }).select("*");
     const projectData = [];
 
     for (const project of projects) {
@@ -210,7 +211,7 @@ const getProjectsByUserId = async (req, res, next) => {
       }
       const projectInfo = {
         project_id: project.id,
-        auth_id: project.auth_id,
+        project_user: project.project_user,
         project_name: project.project_name,
         project_description: project.project_description,
         tasks_name: tasks.map(task => task.task_name),
@@ -226,7 +227,7 @@ const getProjectsByUserId = async (req, res, next) => {
 
     res.status(200).json(projectData);
   } catch (err) {
-    res.status(400).send(`Error retrieving Projects for User ID ${userId}: ${err}`);
+    res.status(400).send(`Error retrieving Projects for User ID ${req.params.Name}: ${err}`);
   }
 };
 
@@ -237,5 +238,5 @@ module.exports = {
   createProject,
   getProjectTasks,
   deleteProject,
-  getProjectsByUserId
+  getProjectsByUserName
 };

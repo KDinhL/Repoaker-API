@@ -2,7 +2,7 @@ module.exports =
   [
     {
       id: 1,
-      auth_id: 1,
+      project_user: 'user1',
       project_name: 'ProjectA',
       project_description: 'this is projectA Description',
       project_start_date: '2023-08-03',
@@ -11,7 +11,7 @@ module.exports =
     },
     {
       id: 2,
-      auth_id: 1,
+      project_user: 'admin',
       project_name: 'ProjectB',
       project_description: 'this is projectB Description',
       project_start_date: '2023-08-01',
@@ -20,7 +20,7 @@ module.exports =
     },
     {
       id: 3,
-      auth_id: 4,
+      project_user: 'admin',
       project_name: 'ProjectC',
       project_description: 'this is projectC Description',
       project_start_date: '2023-08-05',
