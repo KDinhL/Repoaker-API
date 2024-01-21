@@ -130,9 +130,35 @@ const checkUserExists = async (req, res, next) => {
   }
 };
 
+const getUserByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+
+    const user = await knex("auth_table")
+      .where({ username: username })
+      .first();
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      // Add other properties you want to include in the response
+    });
+  } catch (error) {
+    next(`Error getting user by username: ${error}`);
+  }
+};
+
 module.exports = {
   signup,
   login,
   getUser,
-  checkUserExists, 
+  checkUserExists,
+  getUserByUsername 
 };

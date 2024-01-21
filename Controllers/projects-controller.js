@@ -107,6 +107,7 @@ const updateProjectDetails = (req, res) => {
 
 const createProject = (req, res) => {
   const newProject = {
+    project_user: req.body.project_user,
     project_name: req.body.project_name,
     project_description: req.body.project_description,
     project_start_date: req.body.project_start_date,
@@ -184,6 +185,52 @@ const getProjectTasks = async (req, res) => {
   }
 };
 
+const getProjectsByUserName = async (req, res, next) => {
+  try {
+    const userName = req.params.Name;
+    const projects = await knex("projects").where({ project_user: userName }).select("*");
+    const projectData = [];
+
+    for (const project of projects) {
+      const tasks = await knex("tasks").where("project_id", project.id);
+      const startDate = new Date(project.project_start_date);
+      const deadline = new Date(project.project_deadline);
+      const today = new Date();
+      
+      const remainingDays = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+
+      if (remainingDays < 0) {
+        project.remaining_days = "Over Due";
+      }
+      if (tasks.length === 0) {
+        project.project_status_percentage = "in-process";
+      } else {
+        const totalTaskPercentage = tasks.reduce((sum, task) => sum + task.task_status_percentage, 0);
+        const averageTaskPercentage = totalTaskPercentage / tasks.length;
+        project.project_status_percentage = averageTaskPercentage.toString();
+      }
+      const projectInfo = {
+        project_id: project.id,
+        project_user: project.project_user,
+        project_name: project.project_name,
+        project_description: project.project_description,
+        tasks_name: tasks.map(task => task.task_name),
+        tasks_description: tasks.map(task => task.task_description),
+        start_date: project.project_start_date,
+        deadline: project.project_deadline,
+        remaining_days: remainingDays,
+        project_status_percentage: project.project_status_percentage
+      };
+
+      projectData.push(projectInfo);
+    }
+
+    res.status(200).json(projectData);
+  } catch (err) {
+    res.status(400).send(`Error retrieving Projects for User ID ${req.params.Name}: ${err}`);
+  }
+};
+
 module.exports = {
   index,
   getProjectById,
@@ -191,4 +238,5 @@ module.exports = {
   createProject,
   getProjectTasks,
   deleteProject,
+  getProjectsByUserName
 };
